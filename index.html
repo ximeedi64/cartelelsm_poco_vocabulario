@@ -1,0 +1,161 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>LSM interactiva: Conozco poco vocabulario</title>
+	
+	
+	<script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.1.5/dist/mindar-image.prod.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.1.5/dist/mindar-image-aframe.prod.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Shantell+Sans:wght@600&display=swap" rel="stylesheet">
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+      font-family: "Shantell Sans", cursive;
+      font-optical-sizing: auto;
+      font-weight: 600;
+      font-style: normal;
+      font-variation-settings:
+        "BNCE" 0,
+        "INFM" 0,
+        "SPAC" 0;
+    }
+    a-scene {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Estilo del botón flotante */
+    #enableAudio {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 24px;
+      font-size: 18px;
+      font-weight: bold;
+      background-color: #45c1f1;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      z-index: 1000; /* Sobre la escena */
+      font-family: "Shantell Sans", cursive;
+      font-optical-sizing: auto;
+      font-weight: 600;
+      font-style: normal;
+      font-variation-settings:
+        "BNCE" 0,
+        "INFM" 0,
+        "SPAC" 0;
+    }
+    #enableAudio:hover {
+      background-color: #7f39fb;
+    }
+
+    /* Botón "¿Quieres aprender más?" */
+    #learnMoreBtn {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 24px;
+      font-size: 18px;
+      background-color: #45c1f1;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      z-index: 1000;
+      display: none; /* oculto hasta que se detecte la imagen */
+      font-family: "Shantell Sans", cursive;
+      font-weight: 600;
+    }
+    #learnMoreBtn:hover {
+      background-color: #7f39fb;
+    }
+
+  </style>
+	
+</head>
+
+<body>
+	 <!-- Botón para activar el audio -->
+  <button id="enableAudio">🔊 Activar sonido</button>
+
+    <!-- Botón para aprender más -->
+  <button id="learnMoreBtn" onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSdaEZkGwrQw5d5-Bjkb-6EY7VPAQzWR-d8kdifycmcoUAdSkQ/viewform?usp=publish-editor', '_blank')">
+    ¿Quieres aprender más?
+  </button>
+
+  <a-scene 
+      mindar-image="imageTargetSrc: targets.mind; autoStart: true;" 
+      color-space="sRGB"
+      renderer="colorManagement: true, physicallyCorrectLights"
+      vr-mode-ui="enabled: false"
+      device-orientation-permission-ui="enabled: false">
+
+    <a-assets>
+      <!-- Video sin sonido inicialmente -->
+      <video id="miVideo" src="Video_Audio_México.mp4" loop muted preload="auto" crossorigin="anonymous"></video>
+    </a-assets>
+
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+    <a-entity mindar-image-target="targetIndex: 0" id="target">
+      <a-video src="#miVideo" width="1" height="1.414" position="0 0 0" material="shader: flat"></a-video>
+    </a-entity>
+
+  </a-scene>
+
+  <script>
+    const target = document.querySelector("#target");
+    const video = document.querySelector("#miVideo");
+    const btn = document.querySelector("#enableAudio");
+
+    // Activar audio al hacer clic en el botón
+    btn.addEventListener("click", () => {
+      video.muted = false; // desmutea
+      video.play();         // asegura que se reproduzca
+      btn.style.display = "none"; // oculta el botón
+    });
+
+    // Reproducir video cuando se detecta la imagen
+    target.addEventListener("targetFound", () => {
+      video.play();
+    });
+
+    // Pausar video cuando se pierde la imagen
+    target.addEventListener("targetLost", () => {
+      video.pause();
+    });
+
+        // Mostrar/ocultar el botón "¿Quieres aprender más?" según el marcador
+    target.addEventListener("targetFound", () => {
+      video.play();
+      learnMoreBtn.style.display = "block";
+    });
+
+    target.addEventListener("targetLost", () => {
+      video.pause();
+      learnMoreBtn.style.display = "none";
+    });
+
+    
+  </script>
+</body>
+</html>
